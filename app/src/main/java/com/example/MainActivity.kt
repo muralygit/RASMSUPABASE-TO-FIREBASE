@@ -10,6 +10,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import android.webkit.JsResult
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
@@ -172,6 +173,20 @@ fun WebViewScreen(
                     
                     override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage?): Boolean {
                         Log.d("WebViewConsole", "${consoleMessage?.message()} -- From line ${consoleMessage?.lineNumber()} of ${consoleMessage?.sourceId()}")
+                        return true
+                    }
+
+                    override fun onJsAlert(
+                        view: WebView?,
+                        url: String?,
+                        message: String?,
+                        result: JsResult?
+                    ): Boolean {
+                        android.app.AlertDialog.Builder(ctx)
+                            .setMessage(message)
+                            .setPositiveButton("OK") { _, _ -> result?.confirm() }
+                            .setOnCancelListener { result?.cancel() }
+                            .show()
                         return true
                     }
                 }
